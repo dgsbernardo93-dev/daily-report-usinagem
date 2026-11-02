@@ -164,7 +164,8 @@
             </div>
 
             <div class="file-section">
-                <label>📷 Tirar Foto com a Câmara:</label>
+                <label>📷 Tirar Foto com a Câmera:</label>
+                <!-- Atributo capture="environment" força abertura direta da câmera traseira sem menu duplo -->
                 <input type="file" id="fotosCamera" accept="image/*" capture="environment" onchange="adicionarCamera(this)">
             </div>
 
@@ -301,7 +302,21 @@
             textoMensagem += `\n📝 *Obs Gerais:* ${obs}`;
         }
 
-        if (navigator.share) {
+        // Garante suporte robusto à partilha com os arquivos reais anexados
+        if (navigator.canShare && navigator.canShare({ files: listaFotos })) {
+            navigator.share({
+                title: 'Daily Report - Usinagem',
+                text: textoMensagem,
+                files: listaFotos
+            }).then(() => {
+                limparFormulario();
+            }).catch((error) => {
+                if (error.name !== 'AbortError') {
+                    abrirWhatsAppApenasTexto(textoMensagem);
+                    limparFormulario();
+                }
+            });
+        } else if (navigator.share) {
             navigator.share({
                 title: 'Daily Report - Usinagem',
                 text: textoMensagem,

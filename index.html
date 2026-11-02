@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Daily Report - Usinagem</title>
+    
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #eef2f7; margin: 0; padding: 15px; color: #333; }
         .container { max-width: 500px; background: #fff; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); margin: auto; overflow: hidden; }
         .header { background: linear-gradient(135deg, #075e54, #128c7e); color: white; padding: 25px 20px; text-align: center; }
-        .header h2 { margin: 0; font-size: 24px; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .header h2 { margin: 0; font-size: 24px; letter-spacing: 0.5px; text-transform: uppercase; }
         .header p { margin: 5px 0 0; font-size: 14px; opacity: 0.95; font-weight: 500; }
         .form-body { padding: 20px; }
         .form-group { margin-bottom: 18px; }
-        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 13px; color: #444; text-transform: uppercase; letter-spacing: 0.3px; }
-        input[type="date"], input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; border: 1.5px solid #ccd0d5; border-radius: 8px; font-size: 16px; background: #fafbfc; transition: border-color 0.2s; }
+        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 13px; color: #444; text-transform: uppercase; }
+        input[type="date"], input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; border: 1.5px solid #ccd0d5; border-radius: 8px; font-size: 16px; background: #fafbfc; }
         input:focus, textarea:focus { border-color: #128c7e; outline: none; background: #fff; }
         textarea { resize: vertical; height: 75px; }
         .badge-sector { display: inline-block; background: #e1f5fe; color: #0288d1; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
@@ -25,13 +26,10 @@
         .desvio-box { background: #fff5f5; padding: 14px; border-radius: 8px; border: 1.5px solid #feb2b2; margin-bottom: 18px; display: none; }
         .desvio-box label { color: #c53030; }
         .desvio-box input, .desvio-box textarea { background: #fff; border-color: #fc8181; }
-        .desvio-box input:focus, .desvio-box textarea:focus { border-color: #e53e3e; }
-        .file-section { background: #f8f9fa; padding: 14px; border: 1.5px dashed #128c7e; border-radius: 8px; margin-bottom: 10px; text-align: center; cursor: pointer; transition: background 0.2s; }
-        .file-section:active { background: #eef2f7; }
+        .file-section { background: #f8f9fa; padding: 14px; border: 1.5px dashed #128c7e; border-radius: 8px; margin-bottom: 10px; text-align: center; cursor: pointer; }
         .file-section span { color: #075e54; font-weight: bold; font-size: 14px; display: block; }
         .file-count { font-size: 13px; margin-top: 8px; font-weight: bold; text-align: center; padding: 6px; border-radius: 6px; background: #f1f3f5; color: #555; }
-        button.whatsapp-btn { width: 100%; background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; padding: 16px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); text-transform: uppercase; letter-spacing: 0.5px; transition: opacity 0.2s; }
-        button.whatsapp-btn:active { opacity: 0.85; }
+        button.whatsapp-btn { width: 100%; background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; padding: 16px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -100,12 +98,12 @@
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="obsDesvio">📝 Observação do Desvio:</label>
-                <textarea id="obsDesvio" placeholder="Descreva o motivo do desvio..."></textarea>
+                <textarea id="obsDesvio" placeholder="Descreva o motivo..."></textarea>
             </div>
         </div>
         <div class="form-group">
             <label for="obs">📝 Observações Gerais (Opcional):</label>
-            <textarea id="obs" placeholder="Detalhes técnicos, ferramentas, ocorrências..."></textarea>
+            <textarea id="obs" placeholder="Detalhes..."></textarea>
         </div>
         <div class="form-group">
             <label>📸 Registo Fotográfico:</label>
@@ -122,22 +120,24 @@
 </div>
 
 <script>
+    document.addEventListener("deviceready", onDeviceReady, false);
     document.getElementById('termino').valueAsDate = new Date();
     let listaFotos = []; 
 
+    function onDeviceReady() { console.log("Cordova pronto."); }
+
     function toggleTratamento() {
         const selecionado = document.querySelector('input[name="equipamento"]:checked');
-        const caixa = document.getElementById('movimentacaoTratamento');
-        caixa.style.display = (selecionado && selecionado.value === "Tratamento térmico") ? 'block' : 'none';
+        document.getElementById('movimentacaoTratamento').style.display = (selecionado && selecionado.value === "Tratamento térmico") ? 'block' : 'none';
     }
 
     function toggleDesvio(mostrar) {
         document.getElementById('camposDesvio').style.display = mostrar ? 'block' : 'none';
+        if (!mostrar) { document.getElementById('qtdDesvio').value = ''; document.getElementById('obsDesvio').value = ''; }
     }
 
     function atualizarContador() {
-        const contador = document.getElementById('contadorFotos');
-        contador.textContent = listaFotos.length === 0 ? "Nenhuma foto selecionada." : `✅ ${listaFotos.length} foto(s) pronta(s).`;
+        document.getElementById('contadorFotos').textContent = listaFotos.length === 0 ? "Nenhuma foto selecionada." : `✅ ${listaFotos.length} foto(s) pronta(s).`;
     }
 
     function tirarFotoCamera() {
@@ -165,9 +165,7 @@
     }
 
     function onFail(message) {
-        if (message !== "No Image Selected" && message !== "User cancelled dialog") {
-            alert('Falha na ação: ' + message);
-        }
+        if (message !== "No Image Selected" && message !== "User cancelled dialog") alert('Falha: ' + message);
     }
 
     function enviarWhatsApp() {
@@ -181,7 +179,25 @@
 
         let textoMensagem = `📊 *DAILY REPORT - USINAGEM*\n\n📅 *Término:* ${dataFormatada}\n🔧 *Equipamento:* ${equipamento}\n🔢 *O.S.:* ${os}`;
 
-        // Envio simplificado (apenas texto por enquanto)
+        // APK: O segredo é usar share() e passar o array de fotos no terceiro parâmetro.
+        if (window.plugins && window.plugins.socialsharing) {
+            window.plugins.socialsharing.share(
+                textoMensagem,      // Texto
+                'Daily Report',     // Assunto
+                listaFotos,         // Array de caminhos (fotos)
+                null,               // URL
+                function() { limparFormulario(); }, // Sucesso
+                function(err) {     // Erro
+                    console.error('Erro no share:', err);
+                    alert("Erro ao enviar fotos. Vamos enviar só o texto.");
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textoMensagem)}`, '_blank');
+                    limparFormulario();
+                }
+            );
+            return;
+        }
+
+        // Fallback para o link da Netlify
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textoMensagem)}`, '_blank');
         limparFormulario();
     }

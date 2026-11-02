@@ -21,22 +21,15 @@ jobs:
         node-version: '20'
 
     - name: Install Cordova
-      run: npm install -g cordova@12
+      run: npm install -g cordova@12.0.0
 
     - name: Create Cordova Project
       run: |
         cordova create app com.usinagem.dailyreport "Daily Report"
         cd app
-        cordova platform add android@15.1.0
+        cordova platform add android@13.0.0
 
-    - name: Patch Gradle (XmlParser Fix)
-      run: |
-        cd app/platforms/android
-        # Procura o arquivo cordova.gradle e adiciona o import que resolve o erro
-        # A linha 'import groovy.xml.XmlParser' resolve o problema de compilação
-        sed -i '1i import groovy.xml.XmlParser' CordovaLib/cordova.gradle
-
-    - name: Install Plugins
+    - name: Install Plugins (Apenas Câmera)
       run: |
         cd app
         cordova plugin add cordova-plugin-camera

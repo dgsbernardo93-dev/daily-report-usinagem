@@ -4,48 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Daily Report - Usinagem</title>
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Daily Report">
-    <meta name="theme-color" content="#128c7e">
-    
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #eef2f7; margin: 0; padding: 15px; color: #333; }
         .container { max-width: 500px; background: #fff; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); margin: auto; overflow: hidden; }
-        
         .header { background: linear-gradient(135deg, #075e54, #128c7e); color: white; padding: 25px 20px; text-align: center; }
         .header h2 { margin: 0; font-size: 24px; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .header p { margin: 5px 0 0; font-size: 14px; opacity: 0.95; font-weight: 500; }
-
         .form-body { padding: 20px; }
         .form-group { margin-bottom: 18px; }
         label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 13px; color: #444; text-transform: uppercase; letter-spacing: 0.3px; }
-        
         input[type="date"], input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; border: 1.5px solid #ccd0d5; border-radius: 8px; font-size: 16px; background: #fafbfc; transition: border-color 0.2s; }
         input:focus, textarea:focus { border-color: #128c7e; outline: none; background: #fff; }
         textarea { resize: vertical; height: 75px; }
-
         .badge-sector { display: inline-block; background: #e1f5fe; color: #0288d1; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
-
         .radio-group { background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1.5px solid #e1e4e8; }
         .radio-option { display: flex; align-items: center; margin-bottom: 10px; font-size: 15px; font-weight: 500; cursor: pointer; }
         .radio-option:last-child { margin-bottom: 0; }
         .radio-option input { margin-right: 12px; width: 20px; height: 20px; accent-color: #128c7e; }
-
         .desvio-box { background: #fff5f5; padding: 14px; border-radius: 8px; border: 1.5px solid #feb2b2; margin-bottom: 18px; display: none; }
         .desvio-box label { color: #c53030; }
         .desvio-box input, .desvio-box textarea { background: #fff; border-color: #fc8181; }
         .desvio-box input:focus, .desvio-box textarea:focus { border-color: #e53e3e; }
-
         .file-section { background: #f8f9fa; padding: 14px; border: 1.5px dashed #128c7e; border-radius: 8px; margin-bottom: 10px; text-align: center; cursor: pointer; transition: background 0.2s; }
         .file-section:active { background: #eef2f7; }
         .file-section span { color: #075e54; font-weight: bold; font-size: 14px; display: block; }
-        
         .file-count { font-size: 13px; margin-top: 8px; font-weight: bold; text-align: center; padding: 6px; border-radius: 6px; background: #f1f3f5; color: #555; }
-
         button.whatsapp-btn { width: 100%; background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; padding: 16px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); text-transform: uppercase; letter-spacing: 0.5px; transition: opacity 0.2s; }
         button.whatsapp-btn:active { opacity: 0.85; }
     </style>
@@ -63,12 +47,10 @@
             <label for="termino">📅 Data de Término:</label>
             <input type="date" id="termino">
         </div>
-
         <div class="form-group">
             <label>📌 Setor:</label>
             <div class="badge-sector">Usinagem</div>
         </div>
-
         <div class="form-group">
             <label>🔧 Equipamento:</label>
             <div class="radio-group">
@@ -81,7 +63,6 @@
                 <label class="radio-option"><input type="radio" name="equipamento" value="Tratamento térmico" onchange="toggleTratamento()"> Tratamento térmico</label>
             </div>
         </div>
-
         <div class="form-group" id="movimentacaoTratamento" style="display: none;">
             <label>🔄 Movimentação do material:</label>
             <div class="radio-group">
@@ -89,17 +70,14 @@
                 <label class="radio-option"><input type="radio" name="movimentacao" value="🔥 Retornando (Chegada da Têmpera)"> 🔥 Retornando (Chegada da Têmpera)</label>
             </div>
         </div>
-
         <div class="form-group">
             <label for="os">🔢 Número da O.S.:</label>
             <input type="text" id="os" placeholder="Ex: OP0112">
         </div>
-
         <div class="form-group">
             <label for="qtd">📦 Quantidade (pçs):</label>
             <input type="number" id="qtd" placeholder="Ex: 02">
         </div>
-
         <div class="form-group">
             <label>⚙️ Status / Etapa:</label>
             <div class="radio-group">
@@ -108,7 +86,6 @@
                 <label class="radio-option"><input type="radio" name="etapa" value="Peça finalizada"> Peça finalizada</label>
             </div>
         </div>
-
         <div class="form-group">
             <label>⚠️ Houve peças com desvio?</label>
             <div class="radio-group">
@@ -116,7 +93,6 @@
                 <label class="radio-option"><input type="radio" name="houveDesvio" id="desvioSim" value="Sim" onclick="toggleDesvio(true)"> Sim</label>
             </div>
         </div>
-
         <div class="desvio-box" id="camposDesvio">
             <div class="form-group" style="margin-bottom: 12px;">
                 <label for="qtdDesvio">🔢 Qtd de Peças com Desvio:</label>
@@ -127,26 +103,20 @@
                 <textarea id="obsDesvio" placeholder="Descreva o motivo do desvio..."></textarea>
             </div>
         </div>
-
         <div class="form-group">
             <label for="obs">📝 Observações Gerais (Opcional):</label>
             <textarea id="obs" placeholder="Detalhes técnicos, ferramentas, ocorrências..."></textarea>
         </div>
-
         <div class="form-group">
             <label>📸 Registo Fotográfico:</label>
-            
             <div class="file-section" onclick="tirarFotoCamera()">
                 <span>📷 Tirar Foto com a Câmara</span>
             </div>
-
             <div class="file-section" onclick="tirarFotoGaleria()">
                 <span>📁 Escolher da Galeria</span>
             </div>
-
             <div class="file-count" id="contadorFotos">Nenhuma foto selecionada.</div>
         </div>
-
         <button class="whatsapp-btn" onclick="enviarWhatsApp()">Enviar Daily Report 🚀</button>
     </div>
 </div>
@@ -158,55 +128,31 @@
     function toggleTratamento() {
         const selecionado = document.querySelector('input[name="equipamento"]:checked');
         const caixa = document.getElementById('movimentacaoTratamento');
-        const mostrar = selecionado && selecionado.value === "Tratamento térmico";
-        caixa.style.display = mostrar ? 'block' : 'none';
-
-        if (!mostrar) {
-            document.querySelectorAll('input[name="movimentacao"]').forEach(item => item.checked = false);
-        }
+        caixa.style.display = (selecionado && selecionado.value === "Tratamento térmico") ? 'block' : 'none';
     }
 
     function toggleDesvio(mostrar) {
-        const caixa = document.getElementById('camposDesvio');
-        caixa.style.display = mostrar ? 'block' : 'none';
-        if (!mostrar) {
-            document.getElementById('qtdDesvio').value = '';
-            document.getElementById('obsDesvio').value = '';
-        }
+        document.getElementById('camposDesvio').style.display = mostrar ? 'block' : 'none';
     }
 
     function atualizarContador() {
         const contador = document.getElementById('contadorFotos');
-        if (listaFotos.length === 0) {
-            contador.textContent = "Nenhuma foto selecionada.";
-        } else {
-            contador.textContent = `✅ ${listaFotos.length} foto(s) pronta(s).`;
-        }
+        contador.textContent = listaFotos.length === 0 ? "Nenhuma foto selecionada." : `✅ ${listaFotos.length} foto(s) pronta(s).`;
     }
 
     function tirarFotoCamera() {
         if (navigator.camera) {
             navigator.camera.getPicture(onSuccess, onFail, { 
-                quality: 60,
-                destinationType: Camera.DestinationType.FILE_URI, 
-                sourceType: Camera.PictureSourceType.CAMERA, 
-                correctOrientation: true
+                quality: 60, destinationType: Camera.DestinationType.FILE_URI, sourceType: Camera.PictureSourceType.CAMERA, correctOrientation: true
             });
-        } else {
-            alert("Câmera disponível apenas no aplicativo instalado.");
         }
     }
 
     function tirarFotoGaleria() {
         if (navigator.camera) {
             navigator.camera.getPicture(onSuccess, onFail, { 
-                quality: 60,
-                destinationType: Camera.DestinationType.FILE_URI, 
-                sourceType: Camera.PictureSourceType.PHOTOLIBRARY, 
-                correctOrientation: true
+                quality: 60, destinationType: Camera.DestinationType.FILE_URI, sourceType: Camera.PictureSourceType.PHOTOLIBRARY, correctOrientation: true
             });
-        } else {
-            alert("Galeria disponível apenas no aplicativo instalado.");
         }
     }
 
@@ -225,114 +171,19 @@
     }
 
     function enviarWhatsApp() {
+        const os = document.getElementById('os').value;
+        if (!os) { alert('Preencha a O.S.'); return; }
+        if (listaFotos.length === 0) { alert('Adicione pelo menos uma foto.'); return; }
+
         const termino = document.getElementById('termino').value;
         const dataFormatada = termino ? termino.split('-').reverse().join('/') : '';
-        const setor = "Usinagem";
-        const eqSelecionado = document.querySelector('input[name="equipamento"]:checked');
-        const equipamento = eqSelecionado ? eqSelecionado.value : '';
-        const movSelecionada = document.querySelector('input[name="movimentacao"]:checked');
-        const movimentacao = movSelecionada ? movSelecionada.value : '';
-        const os = document.getElementById('os').value;
-        const qtd = document.getElementById('qtd').value;
-        const etapaSelecionada = document.querySelector('input[name="etapa"]:checked');
-        const status = etapaSelecionada ? etapaSelecionada.value : '';
-        const houveDesvio = document.querySelector('input[name="houveDesvio"]:checked').value;
-        const qtdDesvio = document.getElementById('qtdDesvio').value;
-        const obsDesvio = document.getElementById('obsDesvio').value;
-        const obs = document.getElementById('obs').value;
+        const equipamento = document.querySelector('input[name="equipamento"]:checked').value;
 
-        if (!os) {
-            alert('Por favor, preencha o número da O.S.');
-            document.getElementById('os').focus();
-            return;
-        }
+        let textoMensagem = `📊 *DAILY REPORT - USINAGEM*\n\n📅 *Término:* ${dataFormatada}\n🔧 *Equipamento:* ${equipamento}\n🔢 *O.S.:* ${os}`;
 
-        if (equipamento === "Tratamento térmico" && !movimentacao) {
-            alert('Por favor, selecione a movimentação do material.');
-            return;
-        }
-
-        if (houveDesvio === "Sim" && !qtdDesvio) {
-            alert('Por favor, informe a quantidade de peças com desvio.');
-            document.getElementById('qtdDesvio').focus();
-            return;
-        }
-
-        if (listaFotos.length === 0) {
-            alert('Por favor, adicione pelo menos uma fotografia antes de enviar.');
-            return;
-        }
-
-        let textoMensagem = 
-`📊 *DAILY REPORT - USINAGEM*
-
-📅 *Término:* ${dataFormatada}
-📌 *Setor:* ${setor}
-🔧 *Equipamento:* ${equipamento}`;
-
-        if (equipamento === "Tratamento térmico" && movimentacao) {
-            textoMensagem += `\n🔄 *Movimentação:* ${movimentacao}`;
-        }
-
-        textoMensagem += `
-🔢 *O.S.:* ${os}
-📦 *Qtd:* ${qtd} pçs
-⚙️ *Status:* ${status}`;
-
-        if (houveDesvio === "Sim") {
-            textoMensagem += `\n⚠️ *Desvio:* Sim (${qtdDesvio} pçs)`;
-            if (obsDesvio.trim() !== "") {
-                textoMensagem += `\n📝 *Obs Desvio:* ${obsDesvio}`;
-            }
-        } else {
-            textoMensagem += `\n⚠️ *Desvio:* Não`;
-        }
-
-        if (obs.trim() !== "") {
-            textoMensagem += `\n📝 *Obs Gerais:* ${obs}`;
-        }
-
-        // ===== APK: Usando o plugin socialsharing (share genérico) =====
-        if (window.plugins && window.plugins.socialsharing) {
-            window.plugins.socialsharing.share(
-                textoMensagem,
-                'Daily Report',
-                listaFotos,
-                null,
-                function() {
-                    limparFormulario();
-                },
-                function(err) {
-                    console.error('Erro no share:', err);
-                    alert("Não foi possível anexar as fotos. Enviando apenas o texto.");
-                    abrirWhatsAppApenasTexto(textoMensagem);
-                    limparFormulario();
-                }
-            );
-            return;
-        }
-
-        // ===== NAVEGADOR WEB =====
-        if (navigator.share) {
-            navigator.share({
-                title: 'Daily Report - Usinagem',
-                text: textoMensagem
-            }).then(() => {
-                limparFormulario();
-            }).catch(() => {
-                abrirWhatsAppApenasTexto(textoMensagem);
-                limparFormulario();
-            });
-            return;
-        }
-
-        // ===== FALLBACK =====
-        abrirWhatsAppApenasTexto(textoMensagem);
+        // Envio simplificado (apenas texto por enquanto)
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textoMensagem)}`, '_blank');
         limparFormulario();
-    }
-
-    function abrirWhatsAppApenasTexto(texto) {
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
     }
 
     function limparFormulario() {
@@ -346,6 +197,5 @@
         document.getElementById('termino').valueAsDate = new Date();
     }
 </script>
-
 </body>
 </html>

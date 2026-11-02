@@ -33,6 +33,8 @@ jobs:
         cordova create app com.usinagem.dailyreport "Daily Report"
         cd app
         cordova platform add android
+        # Adiciona o plugin oficial de câmara para dar permissão nativa ao Android
+        cordova plugin add cordova-plugin-camera
 
     - name: Copy HTML source
       run: |

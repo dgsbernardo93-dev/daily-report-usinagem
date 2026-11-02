@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.usinagem.dailyreport" version="1.0.0"
+        xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Daily Report</name>
+    <description>Daily Report Usinagem</description>
+    <author email="voce@empresa.com" href="#">Usinagem</author>
+
+    <content src="index.html" />
+    
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="whatsapp:*" />
+    <allow-intent href="tel:*" />
+    <access origin="*" />
+
+    <platform name="android">
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.CAMERA" />
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest/queries">
+            <package android:name="com.whatsapp" />
+            <package android:name="com.whatsapp.w4b" />
+        </config-file>
+    </platform>
+</widget>

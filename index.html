@@ -153,13 +153,7 @@
 
 <script>
     document.getElementById('termino').valueAsDate = new Date();
-    document.addEventListener("deviceready", onDeviceReady, false);
-
     let listaFotos = []; 
-
-    function onDeviceReady() {
-        console.log("Cordova pronto.");
-    }
 
     function toggleTratamento() {
         const selecionado = document.querySelector('input[name="equipamento"]:checked');
@@ -190,15 +184,16 @@
         }
     }
 
-    // --- CÂMERA E GALERIA ---
     function tirarFotoCamera() {
         if (navigator.camera) {
             navigator.camera.getPicture(onSuccess, onFail, { 
                 quality: 60,
                 destinationType: Camera.DestinationType.FILE_URI, 
-                sourceType: Camera.PictureSourceType.CAMERA, // SOMENTE CÂMERA
+                sourceType: Camera.PictureSourceType.CAMERA, 
                 correctOrientation: true
             });
+        } else {
+            alert("Câmera disponível apenas no aplicativo instalado.");
         }
     }
 
@@ -207,14 +202,15 @@
             navigator.camera.getPicture(onSuccess, onFail, { 
                 quality: 60,
                 destinationType: Camera.DestinationType.FILE_URI, 
-                sourceType: Camera.PictureSourceType.PHOTOLIBRARY, // SOMENTE GALERIA
+                sourceType: Camera.PictureSourceType.PHOTOLIBRARY, 
                 correctOrientation: true
             });
+        } else {
+            alert("Galeria disponível apenas no aplicativo instalado.");
         }
     }
 
     function onSuccess(imageURI) {
-        // Alguns Androids retornam o caminho sem o file://, o que quebra o plugin
         if (imageURI && !imageURI.startsWith('file://') && !imageURI.startsWith('content://')) {
             imageURI = 'file://' + imageURI;
         }
@@ -228,7 +224,6 @@
         }
     }
 
-    // --- ENVIO ---
     function enviarWhatsApp() {
         const termino = document.getElementById('termino').value;
         const dataFormatada = termino ? termino.split('-').reverse().join('/') : '';
@@ -246,56 +241,92 @@
         const obsDesvio = document.getElementById('obsDesvio').value;
         const obs = document.getElementById('obs').value;
 
-        if (!os) { alert('Preencha a O.S.'); return; }
-        if (listaFotos.length === 0) { alert('Adicione pelo menos uma foto.'); return; }
-
-        let textoMensagem = `📊 *DAILY REPORT - USINAGEM*\n\n📅 *Término:* ${dataFormatada}\n📌 *Setor:* ${setor}\n🔧 *Equipamento:* ${equipamento}`;
-        if (equipamento === "Tratamento térmico" && movimentacao) textoMensagem += `\n🔄 *Movimentação:* ${movimentacao}`;
-        textoMensagem += `\n🔢 *O.S.:* ${os}\n📦 *Qtd:* ${qtd} pçs\n⚙️ *Status:* ${status}`;
-        if (houveDesvio === "Sim") {
-            textoMensagem += `\n⚠️ *Desvio:* Sim (${qtdDesvio} pçs)`;
-            if (obsDesvio.trim()) textoMensagem += `\n📝 *Obs Desvio:* ${obsDesvio}`;
-        } else {
-            textoMensagem += `\n⚠️ *Desvio:* Não`;
-        }
-        if (obs.trim()) textoMensagem += `\n📝 *Obs Gerais:* ${obs}`;
-
-        // ===== APK: Usando o novo plugin estável de WhatsApp =====
-        if (window.plugins && window.plugins.whatsapp) {
-            // O plugin envia 1 mídia + texto por vez. 
-            // Vamos fazer um loop para enviar todas as fotos com o mesmo texto.
-            let fotosEnviadas = 0;
-            
-            listaFotos.forEach(function(fotoURI) {
-                window.plugins.whatsapp.send(
-                    fotoURI,       // caminho da imagem
-                    textoMensagem, // texto
-                    function() {
-                        fotosEnviadas++;
-                        // Se enviou todas, limpa o form
-                        if(fotosEnviadas === listaFotos.length) {
-                            limparFormulario();
-                        }
-                    },
-                    function(err) {
-                        console.error("Erro ao enviar foto:", err);
-                        alert("Erro ao enviar foto para o WhatsApp. Verifique se o WhatsApp está instalado.");
-                    }
-                );
-            });
+        if (!os) {
+            alert('Por favor, preencha o número da O.S.');
+            document.getElementById('os').focus();
             return;
         }
 
-        // ===== NAVEGADOR WEB (Seu link da Netlify) =====
+        if (equipamento === "Tratamento térmico" && !movimentacao) {
+            alert('Por favor, selecione a movimentação do material.');
+            return;
+        }
+
+        if (houveDesvio === "Sim" && !qtdDesvio) {
+            alert('Por favor, informe a quantidade de peças com desvio.');
+            document.getElementById('qtdDesvio').focus();
+            return;
+        }
+
+        if (listaFotos.length === 0) {
+            alert('Por favor, adicione pelo menos uma fotografia antes de enviar.');
+            return;
+        }
+
+        let textoMensagem = 
+`📊 *DAILY REPORT - USINAGEM*
+
+📅 *Término:* ${dataFormatada}
+📌 *Setor:* ${setor}
+🔧 *Equipamento:* ${equipamento}`;
+
+        if (equipamento === "Tratamento térmico" && movimentacao) {
+            textoMensagem += `\n🔄 *Movimentação:* ${movimentacao}`;
+        }
+
+        textoMensagem += `
+🔢 *O.S.:* ${os}
+📦 *Qtd:* ${qtd} pçs
+⚙️ *Status:* ${status}`;
+
+        if (houveDesvio === "Sim") {
+            textoMensagem += `\n⚠️ *Desvio:* Sim (${qtdDesvio} pçs)`;
+            if (obsDesvio.trim() !== "") {
+                textoMensagem += `\n📝 *Obs Desvio:* ${obsDesvio}`;
+            }
+        } else {
+            textoMensagem += `\n⚠️ *Desvio:* Não`;
+        }
+
+        if (obs.trim() !== "") {
+            textoMensagem += `\n📝 *Obs Gerais:* ${obs}`;
+        }
+
+        // ===== APK: Usando o plugin socialsharing (share genérico) =====
+        if (window.plugins && window.plugins.socialsharing) {
+            window.plugins.socialsharing.share(
+                textoMensagem,
+                'Daily Report',
+                listaFotos,
+                null,
+                function() {
+                    limparFormulario();
+                },
+                function(err) {
+                    console.error('Erro no share:', err);
+                    alert("Não foi possível anexar as fotos. Enviando apenas o texto.");
+                    abrirWhatsAppApenasTexto(textoMensagem);
+                    limparFormulario();
+                }
+            );
+            return;
+        }
+
+        // ===== NAVEGADOR WEB =====
         if (navigator.share) {
             navigator.share({
                 title: 'Daily Report - Usinagem',
                 text: textoMensagem
-            }).then(limparFormulario).catch(limparFormulario);
+            }).then(() => {
+                limparFormulario();
+            }).catch(() => {
+                abrirWhatsAppApenasTexto(textoMensagem);
+                limparFormulario();
+            });
             return;
         }
 
-        // Fallback
+        // ===== FALLBACK =====
         abrirWhatsAppApenasTexto(textoMensagem);
         limparFormulario();
     }

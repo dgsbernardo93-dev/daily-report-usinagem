@@ -41,10 +41,10 @@ jobs:
     - name: Build Android APK
       run: |
         cd app
-        cordova build android --release -- --no-sign
+        cordova build android
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: DailyReport-APK
-        path: app/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
+        path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk

@@ -29,17 +29,10 @@ jobs:
         cd app
         cordova platform add android@12
 
-    - name: Fix Gradle Version
-      run: |
-        cd app/platforms/android
-        # Força o Gradle para a versão 8.7 para evitar o erro do XmlParser
-        sed -i 's/gradle-8.9-all.zip/gradle-8.7-all.zip/g' gradle/wrapper/gradle-wrapper.properties
-
-    - name: Install Plugins
+    - name: Install Plugins (Apenas Câmera)
       run: |
         cd app
         cordova plugin add cordova-plugin-camera
-        cordova plugin add cordova-plugin-x-socialsharing@5.4.0
         cordova plugin add cordova-plugin-android-permissions
 
     - name: Copy Files

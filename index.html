@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Daily Report - Usinagem</title>
     
     <!-- Configurações PWA -->
@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Daily Report">
     <meta name="theme-color" content="#128c7e">
     
-    <!-- Manifesto com o Ícone Exato e Texto CNC Limpo -->
+    <!-- Manifesto -->
     <link rel="manifest" href="data:application/json;charset=utf-8,{
       %22name%22: %22Daily Report Usinagem%22,
       %22short_name%22: %22Daily Report%22,
@@ -29,7 +29,6 @@
       ]
     }">
 
-    <!-- Ícone de Atalho e Apple -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23075e54'/%3E%3Ccircle cx='256' cy='256' r='160' fill='none' stroke='%2325d366' stroke-width='40'/%3E%3Cpath d='M256 96v60M256 356v60M96 256h60M356 256h60M143 143l42 42M327 327l42 42M143 369l42-42M327 185l42-42' stroke='%2325d366' stroke-width='35' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='256' r='75' fill='%23ffffff'/%3E%3Ctext x='256' y='278' font-family='Arial, sans-serif' font-weight='900' font-size='65' fill='%23075e54' text-anchor='middle'%3ECNC%3C/text%3E%3C/svg%3E">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23075e54'/%3E%3Ccircle cx='256' cy='256' r='160' fill='none' stroke='%2325d366' stroke-width='40'/%3E%3Cpath d='M256 96v60M256 356v60M96 256h60M356 256h60M143 143l42 42M327 327l42 42M143 369l42-42M327 185l42-42' stroke='%2325d366' stroke-width='35' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='256' r='75' fill='%23ffffff'/%3E%3Ctext x='256' y='278' font-family='Arial, sans-serif' font-weight='900' font-size='65' fill='%23075e54' text-anchor='middle'%3ECNC%3C/text%3E%3C/svg%3E">
 
@@ -164,8 +163,7 @@
             </div>
 
             <div class="file-section">
-                <label>📷 Tirar Foto com a Câmera:</label>
-                <!-- Atributo capture="environment" força abertura direta da câmera traseira sem menu duplo -->
+                <label>📷 Tirar Foto com a Câmara:</label>
                 <input type="file" id="fotosCamera" accept="image/*" capture="environment" onchange="adicionarCamera(this)">
             </div>
 
@@ -179,6 +177,7 @@
 <script>
     document.getElementById('termino').valueAsDate = new Date();
 
+    // Lista que guarda o File e o Base64 da imagem (necessário para o APK)
     let listaFotos = [];
 
     function toggleTratamento() {
@@ -210,47 +209,85 @@
         }
     }
 
-    function adicionarGaleria(input) {
-        if (input.files) {
+    // Processa galeria e comprime
+    async function adicionarGaleria(input) {
+        if (input.files && input.files.length > 0) {
             for (let i = 0; i < input.files.length; i++) {
-                listaFotos.push(input.files[i]);
+                const comprimida = await comprimirImagem(input.files[i]);
+                listaFotos.push(comprimida);
             }
         }
         input.value = "";
         atualizarContador();
     }
 
-    function adicionarCamera(input) {
+    // Processa câmera e comprime
+    async function adicionarCamera(input) {
         if (input.files && input.files[0]) {
-            listaFotos.push(input.files[0]);
+            const comprimida = await comprimirImagem(input.files[0]);
+            listaFotos.push(comprimida);
         }
         input.value = "";
         atualizarContador();
+    }
+
+    // Comprime a imagem e extrai o Base64 (O segredo para as fotos irem no APK)
+    function comprimirImagem(file, maxLado = 1600, qualidade = 0.75) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    let { width, height } = img;
+                    if (width > maxLado || height > maxLado) {
+                        const ratio = Math.min(maxLado / width, maxLado / height);
+                        width = Math.round(width * ratio);
+                        height = Math.round(height * ratio);
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+                    const base64 = canvas.toDataURL('image/jpeg', qualidade);
+
+                    canvas.toBlob((blob) => {
+                        const novoFile = new File([blob], file.name || 'foto.jpg', { type: 'image/jpeg' });
+                        resolve({ file: novoFile, base64: base64 });
+                    }, 'image/jpeg', qualidade);
+                };
+                img.onerror = () => resolve({ file: file, base64: null });
+                img.src = e.target.result;
+            };
+            reader.onerror = () => resolve({ file: file, base64: null });
+            reader.readAsDataURL(file);
+        });
     }
 
     function enviarWhatsApp() {
         const termino = document.getElementById('termino').value;
         const dataFormatada = termino ? termino.split('-').reverse().join('/') : '';
         const setor = "Usinagem";
-        
+
         const eqSelecionado = document.querySelector('input[name="equipamento"]:checked');
         const equipamento = eqSelecionado ? eqSelecionado.value : '';
-        
+
         const movSelecionada = document.querySelector('input[name="movimentacao"]:checked');
         const movimentacao = movSelecionada ? movSelecionada.value : '';
-        
+
         const os = document.getElementById('os').value;
         const qtd = document.getElementById('qtd').value;
-        
+
         const etapaSelecionada = document.querySelector('input[name="etapa"]:checked');
         const status = etapaSelecionada ? etapaSelecionada.value : '';
-        
+
         const houveDesvio = document.querySelector('input[name="houveDesvio"]:checked').value;
         const qtdDesvio = document.getElementById('qtdDesvio').value;
         const obsDesvio = document.getElementById('obsDesvio').value;
-        
+
         const obs = document.getElementById('obs').value;
 
+        // Validações
         if (!os) {
             alert('Por favor, preencha o número da O.S.');
             document.getElementById('os').focus();
@@ -273,6 +310,7 @@
             return;
         }
 
+        // Montagem da Mensagem
         let textoMensagem = 
 `📊 *DAILY REPORT - USINAGEM*
 
@@ -302,35 +340,63 @@
             textoMensagem += `\n📝 *Obs Gerais:* ${obs}`;
         }
 
-        // Garante suporte robusto à partilha com os arquivos reais anexados
-        if (navigator.canShare && navigator.canShare({ files: listaFotos })) {
-            navigator.share({
-                title: 'Daily Report - Usinagem',
-                text: textoMensagem,
-                files: listaFotos
-            }).then(() => {
-                limparFormulario();
-            }).catch((error) => {
-                if (error.name !== 'AbortError') {
-                    abrirWhatsAppApenasTexto(textoMensagem);
-                    limparFormulario();
-                }
-            });
-        } else if (navigator.share) {
-            navigator.share({
-                title: 'Daily Report - Usinagem',
-                text: textoMensagem,
-                files: listaFotos
-            }).then(() => {
-                limparFormulario();
-            }).catch(() => {
+        // ===== CAMINHO 1: APK (Cordova usando SocialSharing) =====
+        if (window.plugins && window.plugins.socialsharing) {
+            const arquivos = listaFotos.map(f => f.base64).filter(b => !!b);
+
+            if (arquivos.length === 0) {
                 abrirWhatsAppApenasTexto(textoMensagem);
                 limparFormulario();
-            });
-        } else {
-            abrirWhatsAppApenasTexto(textoMensagem);
-            limparFormulario();
+                return;
+            }
+
+            window.plugins.socialsharing.shareViaWhatsApp(
+                textoMensagem,
+                arquivos, 
+                null,
+                function() {
+                    limparFormulario();
+                },
+                function(err) {
+                    console.error('Erro no shareViaWhatsApp:', err);
+                    window.plugins.socialsharing.share(
+                        textoMensagem,
+                        'Daily Report',
+                        arquivos,
+                        null,
+                        function() { limparFormulario(); },
+                        function(err2) {
+                            console.error('Erro no share genérico:', err2);
+                            abrirWhatsAppApenasTexto(textoMensagem);
+                            limparFormulario();
+                        }
+                    );
+                }
+            );
+            return;
         }
+
+        // ===== CAMINHO 2: Navegador moderno =====
+        if (navigator.share) {
+            const filesParaShare = listaFotos.map(f => f.file).filter(f => !!f);
+            if (filesParaShare.length > 0 && navigator.canShare && navigator.canShare({ files: filesParaShare })) {
+                navigator.share({
+                    title: 'Daily Report - Usinagem',
+                    text: textoMensagem,
+                    files: filesParaShare
+                }).then(() => {
+                    limparFormulario();
+                }).catch(() => {
+                    abrirWhatsAppApenasTexto(textoMensagem);
+                    limparFormulario();
+                });
+                return;
+            }
+        }
+
+        // ===== CAMINHO 3: Fallback (só texto) =====
+        abrirWhatsAppApenasTexto(textoMensagem);
+        limparFormulario();
     }
 
     function abrirWhatsAppApenasTexto(texto) {

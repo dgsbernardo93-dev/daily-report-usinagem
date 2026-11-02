@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Report - Usinagem</title>
+    
+    <!-- Configurações PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Daily Report">
+    <meta name="theme-color" content="#128c7e">
+    
+    <!-- Manifesto com o Ícone Exato e Texto CNC Limpo -->
+    <link rel="manifest" href="data:application/json;charset=utf-8,{
+      %22name%22: %22Daily Report Usinagem%22,
+      %22short_name%22: %22Daily Report%22,
+      %22start_url%22: %22.%22,
+      %22display%22: %22standalone%22,
+      %22background_color%22: %22%23eef2f7%22,
+      %22theme_color%22: %22%23128c7e%22,
+      %22icons%22: [
+        {
+          %22src%22: %22data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23075e54'/%3E%3Ccircle cx='256' cy='256' r='160' fill='none' stroke='%2325d366' stroke-width='40'/%3E%3Cpath d='M256 96v60M256 356v60M96 256h60M356 256h60M143 143l42 42M327 327l42 42M143 369l42-42M327 185l42-42' stroke='%2325d366' stroke-width='35' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='256' r='75' fill='%23ffffff'/%3E%3Ctext x='256' y='278' font-family='Arial, sans-serif' font-weight='900' font-size='65' fill='%23075e54' text-anchor='middle'%3ECNC%3C/text%3E%3C/svg%3E%22,
+          %22sizes%22: %22512x512%22,
+          %22type%22: %22image/svg+xml%22
+        }
+      ]
+    }">
+
+    <!-- Ícone de Atalho e Apple -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23075e54'/%3E%3Ccircle cx='256' cy='256' r='160' fill='none' stroke='%2325d366' stroke-width='40'/%3E%3Cpath d='M256 96v60M256 356v60M96 256h60M356 256h60M143 143l42 42M327 327l42 42M143 369l42-42M327 185l42-42' stroke='%2325d366' stroke-width='35' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='256' r='75' fill='%23ffffff'/%3E%3Ctext x='256' y='278' font-family='Arial, sans-serif' font-weight='900' font-size='65' fill='%23075e54' text-anchor='middle'%3ECNC%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23075e54'/%3E%3Ccircle cx='256' cy='256' r='160' fill='none' stroke='%2325d366' stroke-width='40'/%3E%3Cpath d='M256 96v60M256 356v60M96 256h60M356 256h60M143 143l42 42M327 327l42 42M143 369l42-42M327 185l42-42' stroke='%2325d366' stroke-width='35' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='256' r='75' fill='%23ffffff'/%3E%3Ctext x='256' y='278' font-family='Arial, sans-serif' font-weight='900' font-size='65' fill='%23075e54' text-anchor='middle'%3ECNC%3C/text%3E%3C/svg%3E">
+
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #eef2f7; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 500px; background: #fff; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); margin: auto; overflow: hidden; }
+        
+        .header { background: linear-gradient(135deg, #075e54, #128c7e); color: white; padding: 25px 20px; text-align: center; }
+        .header h2 { margin: 0; font-size: 24px; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .header p { margin: 5px 0 0; font-size: 14px; opacity: 0.95; font-weight: 500; }
+
+        .form-body { padding: 20px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 13px; color: #444; text-transform: uppercase; letter-spacing: 0.3px; }
+        
+        input[type="date"], input[type="text"], input[type="number"], textarea { width: 100%; padding: 12px; border: 1.5px solid #ccd0d5; border-radius: 8px; font-size: 16px; background: #fafbfc; transition: border-color 0.2s; }
+        input:focus, textarea:focus { border-color: #128c7e; outline: none; background: #fff; }
+        textarea { resize: vertical; height: 75px; }
+
+        .badge-sector { display: inline-block; background: #e1f5fe; color: #0288d1; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
+
+        .radio-group { background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1.5px solid #e1e4e8; }
+        .radio-option { display: flex; align-items: center; margin-bottom: 10px; font-size: 15px; font-weight: 500; cursor: pointer; }
+        .radio-option:last-child { margin-bottom: 0; }
+        .radio-option input { margin-right: 12px; width: 20px; height: 20px; accent-color: #128c7e; }
+
+        .desvio-box { background: #fff5f5; padding: 14px; border-radius: 8px; border: 1.5px solid #feb2b2; margin-bottom: 18px; display: none; }
+        .desvio-box label { color: #c53030; }
+        .desvio-box input, .desvio-box textarea { background: #fff; border-color: #fc8181; }
+        .desvio-box input:focus, .desvio-box textarea:focus { border-color: #e53e3e; }
+
+        .file-section { background: #f8f9fa; padding: 12px; border: 1.5px dashed #128c7e; border-radius: 8px; margin-bottom: 10px; text-align: left; }
+        .file-section label { color: #075e54; margin-bottom: 6px; font-size: 13px; }
+        input[type="file"] { width: 100%; font-size: 14px; color: #555; }
+        
+        .file-count { font-size: 13px; margin-top: 8px; font-weight: bold; text-align: center; padding: 6px; border-radius: 6px; background: #f1f3f5; color: #555; }
+
+        button.whatsapp-btn { width: 100%; background: linear-gradient(135deg, #25d366, #128c7e); color: white; border: none; padding: 16px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); text-transform: uppercase; letter-spacing: 0.5px; transition: opacity 0.2s; }
+        button.whatsapp-btn:active { opacity: 0.85; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>⚙️ Daily Report</h2>
+        <p>Usinagem</p>
+    </div>
+    
+    <div class="form-body">
+        <div class="form-group">
+            <label for="termino">📅 Data de Término:</label>
+            <input type="date" id="termino">
+        </div>
+
+        <div class="form-group">
+            <label>📌 Setor:</label>
+            <div class="badge-sector">Usinagem</div>
+        </div>
+
+        <div class="form-group">
+            <label>🔧 Equipamento:</label>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="equipamento" value="Centro de Usinagem" onchange="toggleTratamento()" checked> Centro de Usinagem</label>
+                <label class="radio-option"><input type="radio" name="equipamento" value="Embalagem/Prateleira" onchange="toggleTratamento()"> Embalagem/Prateleira</label>
+                <label class="radio-option"><input type="radio" name="equipamento" value="Fresadora convencional" onchange="toggleTratamento()"> Fresadora convencional</label>
+                <label class="radio-option"><input type="radio" name="equipamento" value="Furadeira Radial" onchange="toggleTratamento()"> Furadeira Radial</label>
+                <label class="radio-option"><input type="radio" name="equipamento" value="Torno CNC" onchange="toggleTratamento()"> Torno CNC</label>
+                <label class="radio-option"><input type="radio" name="equipamento" value="Torno convencional" onchange="toggleTratamento()"> Torno convencional</label>
+                <label class="radio-option"><input type="radio" name="equipamento" value="Tratamento térmico" onchange="toggleTratamento()"> Tratamento térmico</label>
+            </div>
+        </div>
+
+        <div class="form-group" id="movimentacaoTratamento" style="display: none;">
+            <label>🔄 Movimentação do material:</label>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="movimentacao" value="🔥 Enviando (Saída para Têmpera)"> 🔥 Enviando (Saída para Têmpera)</label>
+                <label class="radio-option"><input type="radio" name="movimentacao" value="🔥 Retornando (Chegada da Têmpera)"> 🔥 Retornando (Chegada da Têmpera)</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="os">🔢 Número da O.S.:</label>
+            <input type="text" id="os" placeholder="Ex: OP0112">
+        </div>
+
+        <div class="form-group">
+            <label for="qtd">📦 Quantidade (pçs):</label>
+            <input type="number" id="qtd" placeholder="Ex: 02">
+        </div>
+
+        <div class="form-group">
+            <label>⚙️ Status / Etapa:</label>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="etapa" value="Usinagem Lado 1" checked> Usinagem Lado 1</label>
+                <label class="radio-option"><input type="radio" name="etapa" value="Usinagem Lado 2"> Usinagem Lado 2</label>
+                <label class="radio-option"><input type="radio" name="etapa" value="Peça finalizada"> Peça finalizada</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>⚠️ Houve peças com desvio?</label>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="houveDesvio" id="desvioNao" value="Não" checked onclick="toggleDesvio(false)"> Não</label>
+                <label class="radio-option"><input type="radio" name="houveDesvio" id="desvioSim" value="Sim" onclick="toggleDesvio(true)"> Sim</label>
+            </div>
+        </div>
+
+        <div class="desvio-box" id="camposDesvio">
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="qtdDesvio">🔢 Qtd de Peças com Desvio:</label>
+                <input type="number" id="qtdDesvio" placeholder="Ex: 01">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="obsDesvio">📝 Observação do Desvio:</label>
+                <textarea id="obsDesvio" placeholder="Descreva o motivo do desvio..."></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="obs">📝 Observações Gerais (Opcional):</label>
+            <textarea id="obs" placeholder="Detalhes técnicos, ferramentas, ocorrências..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>📸 Registo Fotográfico:</label>
+            
+            <div class="file-section">
+                <label>📁 Escolher da Galeria:</label>
+                <input type="file" id="fotosGaleria" accept="image/*" multiple onchange="adicionarGaleria(this)">
+            </div>
+
+            <div class="file-section">
+                <label>📷 Tirar Foto com a Câmara:</label>
+                <input type="file" id="fotosCamera" accept="image/*" capture="environment" onchange="adicionarCamera(this)">
+            </div>
+
+            <div class="file-count" id="contadorFotos">Nenhuma foto selecionada.</div>
+        </div>
+
+        <button class="whatsapp-btn" onclick="enviarWhatsApp()">Enviar Daily Report 🚀</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('termino').valueAsDate = new Date();
+
+    let listaFotos = [];
+
+    function toggleTratamento() {
+        const selecionado = document.querySelector('input[name="equipamento"]:checked');
+        const caixa = document.getElementById('movimentacaoTratamento');
+        const mostrar = selecionado && selecionado.value === "Tratamento térmico";
+        caixa.style.display = mostrar ? 'block' : 'none';
+
+        if (!mostrar) {
+            document.querySelectorAll('input[name="movimentacao"]').forEach(item => item.checked = false);
+        }
+    }
+
+    function toggleDesvio(mostrar) {
+        const caixa = document.getElementById('camposDesvio');
+        caixa.style.display = mostrar ? 'block' : 'none';
+        if (!mostrar) {
+            document.getElementById('qtdDesvio').value = '';
+            document.getElementById('obsDesvio').value = '';
+        }
+    }
+
+    function atualizarContador() {
+        const contador = document.getElementById('contadorFotos');
+        if (listaFotos.length === 0) {
+            contador.textContent = "Nenhuma foto selecionada.";
+        } else {
+            contador.textContent = `✅ ${listaFotos.length} foto(s) acumulada(s) pronta(s).`;
+        }
+    }
+
+    function adicionarGaleria(input) {
+        if (input.files) {
+            for (let i = 0; i < input.files.length; i++) {
+                listaFotos.push(input.files[i]);
+            }
+        }
+        input.value = "";
+        atualizarContador();
+    }
+
+    function adicionarCamera(input) {
+        if (input.files && input.files[0]) {
+            listaFotos.push(input.files[0]);
+        }
+        input.value = "";
+        atualizarContador();
+    }
+
+    function enviarWhatsApp() {
+        const termino = document.getElementById('termino').value;
+        const dataFormatada = termino ? termino.split('-').reverse().join('/') : '';
+        const setor = "Usinagem";
+        
+        const eqSelecionado = document.querySelector('input[name="equipamento"]:checked');
+        const equipamento = eqSelecionado ? eqSelecionado.value : '';
+        
+        const movSelecionada = document.querySelector('input[name="movimentacao"]:checked');
+        const movimentacao = movSelecionada ? movSelecionada.value : '';
+        
+        const os = document.getElementById('os').value;
+        const qtd = document.getElementById('qtd').value;
+        
+        const etapaSelecionada = document.querySelector('input[name="etapa"]:checked');
+        const status = etapaSelecionada ? etapaSelecionada.value : '';
+        
+        const houveDesvio = document.querySelector('input[name="houveDesvio"]:checked').value;
+        const qtdDesvio = document.getElementById('qtdDesvio').value;
+        const obsDesvio = document.getElementById('obsDesvio').value;
+        
+        const obs = document.getElementById('obs').value;
+
+        if (!os) {
+            alert('Por favor, preencha o número da O.S.');
+            document.getElementById('os').focus();
+            return;
+        }
+
+        if (equipamento === "Tratamento térmico" && !movimentacao) {
+            alert('Por favor, selecione a movimentação do material (Enviando ou Retornando).');
+            return;
+        }
+
+        if (houveDesvio === "Sim" && !qtdDesvio) {
+            alert('Por favor, informe a quantidade de peças com desvio.');
+            document.getElementById('qtdDesvio').focus();
+            return;
+        }
+
+        if (listaFotos.length === 0) {
+            alert('Por favor, adicione pelo menos uma fotografia antes de enviar o relatório.');
+            return;
+        }
+
+        let textoMensagem = 
+`📊 *DAILY REPORT - USINAGEM*
+
+📅 *Término:* ${dataFormatada}
+📌 *Setor:* ${setor}
+🔧 *Equipamento:* ${equipamento}`;
+
+        if (equipamento === "Tratamento térmico" && movimentacao) {
+            textoMensagem += `\n🔄 *Movimentação:* ${movimentacao}`;
+        }
+
+        textoMensagem += `
+🔢 *O.S.:* ${os}
+📦 *Qtd:* ${qtd} pçs
+⚙️ *Status:* ${status}`;
+
+        if (houveDesvio === "Sim") {
+            textoMensagem += `\n⚠️ *Desvio:* Sim (${qtdDesvio} pçs)`;
+            if (obsDesvio.trim() !== "") {
+                textoMensagem += `\n📝 *Obs Desvio:* ${obsDesvio}`;
+            }
+        } else {
+            textoMensagem += `\n⚠️ *Desvio:* Não`;
+        }
+
+        if (obs.trim() !== "") {
+            textoMensagem += `\n📝 *Obs Gerais:* ${obs}`;
+        }
+
+        if (navigator.share) {
+            navigator.share({
+                title: 'Daily Report - Usinagem',
+                text: textoMensagem,
+                files: listaFotos
+            }).then(() => {
+                limparFormulario();
+            }).catch(() => {
+                abrirWhatsAppApenasTexto(textoMensagem);
+                limparFormulario();
+            });
+        } else {
+            abrirWhatsAppApenasTexto(textoMensagem);
+            limparFormulario();
+        }
+    }
+
+    function abrirWhatsAppApenasTexto(texto) {
+        const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+        window.open(urlWhatsApp, '_blank');
+    }
+
+    function limparFormulario() {
+        document.getElementById('os').value = '';
+        document.getElementById('qtd').value = '';
+        document.getElementById('obs').value = '';
+        document.getElementById('desvioNao').checked = true;
+        toggleDesvio(false);
+        listaFotos = [];
+        atualizarContador();
+        document.getElementById('termino').valueAsDate = new Date();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Java JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Cordova
+      run: npm install -g cordova
+
+    - name: Create Cordova Project
+      run: |
+        cordova create app com.usinagem.dailyreport "Daily Report"
+        cd app
+        cordova platform add android
+
+    - name: Copy HTML source
+      run: |
+        cp index.html app/www/index.html
+
+    - name: Build Android APK
+      run: |
+        cd app
+        cordova build android --release -- --no-sign
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: DailyReport-APK
+        path: app/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
+        

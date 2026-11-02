@@ -2,27 +2,21 @@ name: Build Android APK
 
 on:
   push:
-    branches:
-      - main
-      - master
-  workflow_dispatch: # Permite rodar manualmente no botão "Run workflow"
+    branches: [main, master]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Set up Java JDK
-      uses: actions/setup-java@v4
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+        
+    - uses: actions/setup-node@v4
       with:
         node-version: '20'
 
@@ -35,34 +29,26 @@ jobs:
         cd app
         cordova platform add android@12
 
-    - name: Install Cordova Plugins
+    - name: Install Plugins
       run: |
         cd app
-        # Plugin para abrir a câmera e a galeria nativamente
         cordova plugin add cordova-plugin-camera
-        # NOVO PLUGIN: Envia imagens e texto para o WhatsApp no Android
         cordova plugin add cordova-plugin-media-to-whatsapp
-        # Permissões para Android moderno
         cordova plugin add cordova-plugin-android-permissions
-        # Barra de status
-        cordova plugin add cordova-plugin-statusbar
 
-    - name: Copy Source Files
+    - name: Copy Files
       run: |
-        # Copia o HTML principal
         cp index.html app/www/index.html
-        # Copia o arquivo de configuração com as permissões
         cp config.xml app/config.xml
 
-    - name: Build Android APK
+    - name: Build APK
       run: |
         cd app
-        # Gera o APK em modo Debug
         cordova build android --debug
 
-    - name: Upload APK Artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: DailyReport-APK
         path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 30
+        

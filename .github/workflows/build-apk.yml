@@ -47,4 +47,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: DailyReport-APK
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
+        path: app/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk

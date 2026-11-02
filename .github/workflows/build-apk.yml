@@ -33,7 +33,7 @@ jobs:
       run: |
         cd app
         cordova plugin add cordova-plugin-camera
-        cordova plugin add cordova-plugin-media-to-whatsapp
+        cordova plugin add cordova-plugin-x-socialsharing
         cordova plugin add cordova-plugin-android-permissions
 
     - name: Copy Files
@@ -51,4 +51,3 @@ jobs:
       with:
         name: DailyReport-APK
         path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
-        

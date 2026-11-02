@@ -33,7 +33,7 @@ jobs:
       run: |
         cd app
         cordova plugin add cordova-plugin-camera
-        cordova plugin add cordova-plugin-x-socialsharing
+        cordova plugin add cordova-plugin-x-socialsharing@5.4.0
         cordova plugin add cordova-plugin-android-permissions
 
     - name: Copy Files
